@@ -1,7 +1,7 @@
 package com.remote2call.server.starter;
 
+import com.remote2call.common.DefinedThreadFactory;
 import com.remote2call.server.ShutDownHook;
-import com.remote2call.server.env.BaseProperty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -15,42 +15,51 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.net.InetSocketAddress;
 
-public class AbstractLauncher implements Launchable, Closeable {
+public abstract class AbstractLauncher implements Launchable, Closeable {
+
+    private static InetSocketAddress localAddress;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     protected EventLoopGroup bossGroup;
     protected EventLoopGroup workGroup;
 
+    protected Integer bossCores;
+    protected Integer workCores;
+
     protected ChannelInitializer handlerInitializer;
 
     public void run() throws Exception {
-        setAvailableProcessors();
-        logger.info("BaseProperty.getBossCores [{}] BaseProperty.getWorkCores[{}]", BaseProperty.getBossCores() , BaseProperty.getWorkCores());
-        bossGroup = new NioEventLoopGroup(BaseProperty.getBossCores());
-        workGroup = new NioEventLoopGroup(BaseProperty.getWorkCores());
+        bossGroup = new NioEventLoopGroup(bossCores, new DefinedThreadFactory("remote2call-boss"));
+        workGroup = new NioEventLoopGroup(workCores, new DefinedThreadFactory("remote2call-work"));
         ServerBootstrap bootstrap = new ServerBootstrap();
         ChannelFuture future = bootstrap.group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.AUTO_READ, true)
-                .localAddress(new InetSocketAddress(BaseProperty.getServerHost(), BaseProperty.getServerPort()))
+                .localAddress(this.localAddress)
                 .childHandler(handlerInitializer)
                 .bind().sync();
         addShutDownHook();
         future.channel().closeFuture().sync();
     }
 
-    protected void setAvailableProcessors() {
-        String cores = System.getProperty("io.netty.availableProcessors");
-        if (cores == null || Integer.parseInt(cores.trim()) <= 0) {
-            logger.info("SET SYSTEM PROPERTY [io.netty.availableProcessors]");
-            System.setProperty("io.netty.availableProcessors", String.valueOf(BaseProperty.getBossCores()));
-        }
+    public void init(final ChannelInitializer initializer,
+                     final InetSocketAddress address,
+                     final Integer bossCores,
+                     final Integer workCores) {
+        this.handlerInitializer = initializer;
+        this.bossCores = bossCores;
+        this.workCores = workCores;
+        this.localAddress = address;
     }
 
-    public void init(final ChannelInitializer initializer) {
-        this.handlerInitializer = initializer;
+    public void init(final ChannelInitializer initializer,
+                     final String host,
+                     final Integer port,
+                     final Integer bossCores,
+                     final Integer workCores) {
+        init(initializer, new InetSocketAddress(host, port), bossCores, workCores);
     }
 
     public void prepare() {

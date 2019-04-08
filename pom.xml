@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>rc-server</module>
+        <module>rc-common</module>
     </modules>
 
     <dependencies>
