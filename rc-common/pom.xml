@@ -11,5 +11,12 @@
 
     <artifactId>rc-common</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.1</version>
+        </dependency>
+    </dependencies>
 
 </project>
