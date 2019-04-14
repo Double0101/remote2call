@@ -62,9 +62,7 @@ public abstract class AbstractLauncher implements Launchable, Closeable {
         init(initializer, new InetSocketAddress(host, port), bossCores, workCores);
     }
 
-    public void prepare() {
-        logger.info("Execute Prepare-Event");
-    }
+    public abstract void prepare();
 
     public void close() {
         if (bossGroup != null)

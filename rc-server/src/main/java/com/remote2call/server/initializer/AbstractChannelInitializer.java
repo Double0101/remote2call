@@ -1,4 +1,4 @@
-package com.remote2call.server.starter;
+package com.remote2call.server.initializer;
 
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInitializer;
@@ -10,21 +10,13 @@ import java.util.LinkedList;
 
 public abstract class AbstractChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private LinkedList<ChannelInboundHandler> inbounds;
-    private LinkedList<ChannelOutboundHandler> outbounds;
+    protected LinkedList<ChannelInboundHandler> inbounds;
+    protected LinkedList<ChannelOutboundHandler> outbounds;
 
-    abstract public void setInbounds(LinkedList inbounds);
-    abstract public void setOutbounds(LinkedList outbounds);
-
-    private void init() {
-        inbounds = new LinkedList<ChannelInboundHandler>();
-        outbounds = new LinkedList<ChannelOutboundHandler>();
-        setInbounds(inbounds);
-        setOutbounds(outbounds);
-    }
+    abstract public void setInbounds(LinkedList<ChannelInboundHandler> inbounds);
+    abstract public void setOutbounds(LinkedList<ChannelOutboundHandler> outbounds);
 
     protected void initChannel(SocketChannel ch) throws Exception {
-        init();
         final ChannelPipeline pipeline = ch.pipeline();
         outbounds.stream().forEach(out -> pipeline.addLast(out));
         inbounds.stream().forEach(in -> pipeline.addLast(in));
