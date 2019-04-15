@@ -1,6 +1,6 @@
-package com.remote2call.server.zk;
+package com.remote2call.common.zk;
 
-import com.remote2call.server.constant.Constant;
+import com.remote2call.common.constant.Constant;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;

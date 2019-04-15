@@ -1,4 +1,4 @@
-package com.remote2call.server.constant;
+package com.remote2call.common.constant;
 
 public class Constant {
 

@@ -1,6 +1,6 @@
 package com.remote2call.server.service;
 
-import com.remote2call.server.zk.ZkInstance;
+import com.remote2call.common.zk.ZkInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
