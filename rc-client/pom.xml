@@ -11,5 +11,12 @@
 
     <artifactId>rc-client</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.double0101</groupId>
+            <artifactId>rc-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>

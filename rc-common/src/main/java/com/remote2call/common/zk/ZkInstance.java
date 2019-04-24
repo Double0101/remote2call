@@ -6,7 +6,10 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 public class ZkInstance {
@@ -32,11 +35,8 @@ public class ZkInstance {
                         }
                     });
             latch.await();
-        } catch (IOException e) {
-            logger.error("", e);
-            zk = null;
-        } catch (InterruptedException ie) {
-            logger.error("", ie);
+        } catch (Exception e) {
+            logger.error("zookeeper connect fail", e);
             zk = null;
         }
     }
@@ -52,28 +52,73 @@ public class ZkInstance {
         return zkInstance;
     }
 
-    public void addRootNode() throws Exception {
+    public boolean addMasterNode(String path) {
+        byte[] bytes = UUID.randomUUID().toString().getBytes();
         try {
-            Stat s = zk.exists(Constant.ZK_REGISTRY_PATH, false);
+            Stat s = zk.exists(path, false);
             if (s == null) {
-                zk.create(Constant.ZK_REGISTRY_PATH, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                zk.create(path, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+                return true;
+            } else {
+                return false;
             }
         } catch (KeeperException e) {
-            // TODO
+            if (e instanceof KeeperException.NodeExistsException) return false;
         } catch (InterruptedException e) {
-            // TODO
         }
+        return checkOwner(path, bytes);
     }
 
-    public void createNode(String data) {
+    private boolean checkOwner(String path, byte[] bytes) {
+        for (int i = 0; i < 3; ++i) {
+            try {
+                Stat stat = new Stat();
+                byte[] bs = zk.getData(path, false, stat);
+                if (Arrays.equals(bytes, bs)) return true;
+            } catch (KeeperException e) {
+                if (e instanceof KeeperException.NoNodeException) {
+                    return false;
+                }
+            } catch (InterruptedException e) {
+            }
+        }
+        return false;
+    }
+
+    public boolean createNode(String nodePath,
+                              byte[] data,
+                              CreateMode createMode)
+            throws KeeperException, InterruptedException{
+            String path = zk.create(nodePath, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, createMode);
+            logger.debug("create zookeeper node ({} => {})", path, new String(data));
+            return true;
+    }
+
+    private void watchNode(ZooKeeper zk) {
         try {
-            byte[] bytes = data.getBytes();
-            String path = zk.create(Constant.ZK_DATA_PATH, bytes, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-            logger.debug("create zookeeper node ({} => {})", path, data);
+            List<String> nodeList = zk.getChildren(Constant.ZK_REGISTRY_PATH, event -> {
+                if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
+                    watchNode(zk);
+                }
+            });
+            List<String> dataList = new ArrayList<>();
+            nodeList.forEach(node -> {
+                try {
+                    dataList.add(
+                            new String(zk.getData(Constant.ZK_REGISTRY_PATH + "/" + node,
+                                    false,
+                                    null))
+                    );
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (KeeperException e) {
-            // TODO
+            e.printStackTrace();
         } catch (InterruptedException e) {
-            // TODO
+            e.printStackTrace();
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.remote2call.server.service;
 
+import com.remote2call.common.constant.Constant;
 import com.remote2call.common.zk.ZkInstance;
+import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +20,8 @@ public class ServerRegister {
         if (data != null) {
             ZkInstance zkInstance = zkConnect();
             if (zkInstance != null) {
-                zkInstance.addRootNode();
-                zkInstance.createNode(data);
+                zkInstance.createNode(Constant.ZK_REGISTRY_PATH, new byte[0], CreateMode.PERSISTENT);
+                zkInstance.createNode(Constant.ZK_DATA_PATH, data.getBytes(), CreateMode.EPHEMERAL_SEQUENTIAL);
             }
         }
     }
