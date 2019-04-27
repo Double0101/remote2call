@@ -19,11 +19,10 @@ public class ZkInstance {
 
     private String registerAddress;
 
-    private CountDownLatch latch = new CountDownLatch(1);
-
     private static volatile ZkInstance zkInstance;
 
     private ZkInstance(String address) throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
         zk = null;
         this.registerAddress = address;
         try {
@@ -94,7 +93,9 @@ public class ZkInstance {
             return true;
     }
 
-    private void watchNode(ZooKeeper zk) {
+
+
+    public void watchNode(ZooKeeper zk) {
         try {
             List<String> nodeList = zk.getChildren(Constant.ZK_REGISTRY_PATH, event -> {
                 if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
