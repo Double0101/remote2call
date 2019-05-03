@@ -1,10 +1,8 @@
 package com.remote2call.client.service;
 
-import com.remote2call.common.service.ServiceSupport;
+import com.remote2call.common.connect.ServiceSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.CountDownLatch;
 
 public class ServiceDiscovery extends ServiceSupport {
 
@@ -14,7 +12,7 @@ public class ServiceDiscovery extends ServiceSupport {
         super(address);
         connectServer();
         if (zkInstance != null) {
-            zkInstance.watchNode();
+            zkInstance.watchAll();
         }
     }
 }

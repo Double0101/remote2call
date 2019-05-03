@@ -1,4 +1,4 @@
-package com.remote2call.common.service;
+package com.remote2call.common.connect;
 
 import com.remote2call.common.zk.ZkInstance;
 

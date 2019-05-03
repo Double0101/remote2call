@@ -93,16 +93,18 @@ public class ZkInstance {
             return true;
     }
 
+    public List watchAll() {
+        return watchNode(this.zk);
+    }
 
-
-    public void watchNode(ZooKeeper zk) {
+    public List watchNode(ZooKeeper zk) {
+        List<String> dataList = new ArrayList<>();
         try {
             List<String> nodeList = zk.getChildren(Constant.ZK_REGISTRY_PATH, event -> {
                 if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
                     watchNode(zk);
                 }
             });
-            List<String> dataList = new ArrayList<>();
             nodeList.forEach(node -> {
                 try {
                     dataList.add(
@@ -121,5 +123,10 @@ public class ZkInstance {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return dataList;
+    }
+
+    private void updateConnectServer() {
+
     }
 }
