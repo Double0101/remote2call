@@ -5,7 +5,7 @@ import io.netty.channel.ChannelInitializer;
 import java.net.InetSocketAddress;
 
 public interface Launchable {
-    void run() throws Exception;
+    void start() throws Exception;
     void init(final ChannelInitializer channelInitializer,
               final InetSocketAddress socketAddress,
               final Integer bossCores,

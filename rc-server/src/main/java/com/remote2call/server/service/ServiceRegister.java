@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class ServerRegister extends ServiceSupport {
-    private static final Logger logger = LoggerFactory.getLogger(ServerRegister.class);
+public class ServiceRegister extends ServiceSupport {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceRegister.class);
 
-    public ServerRegister(String address) {
+    public ServiceRegister(String address) {
         super(address);
     }
 

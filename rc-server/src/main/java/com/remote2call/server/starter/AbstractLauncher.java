@@ -17,7 +17,7 @@ import java.net.InetSocketAddress;
 
 public abstract class AbstractLauncher implements Launchable, Closeable {
 
-    private static InetSocketAddress localAddress;
+    protected static InetSocketAddress localAddress;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -29,7 +29,7 @@ public abstract class AbstractLauncher implements Launchable, Closeable {
 
     protected ChannelInitializer handlerInitializer;
 
-    public void run() throws Exception {
+    public void start() throws Exception {
         bossGroup = new NioEventLoopGroup(bossCores, new DefinedThreadFactory("remote2call-boss"));
         workGroup = new NioEventLoopGroup(workCores, new DefinedThreadFactory("remote2call-work"));
         ServerBootstrap bootstrap = new ServerBootstrap();
@@ -41,6 +41,7 @@ public abstract class AbstractLauncher implements Launchable, Closeable {
                 .childHandler(handlerInitializer)
                 .bind().sync();
         addShutDownHook();
+        onStart();
         future.channel().closeFuture().sync();
     }
 
@@ -63,6 +64,7 @@ public abstract class AbstractLauncher implements Launchable, Closeable {
     }
 
     public abstract void prepare();
+    public abstract void onStart() throws Exception;
 
     public void close() {
         if (bossGroup != null)
