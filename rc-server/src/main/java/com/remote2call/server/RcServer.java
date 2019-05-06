@@ -17,20 +17,8 @@ public class RcServer extends AbstractLauncher {
     private Map<String, Object> handlerMap = new HashMap<>();
 //    private volatile ThreadPoolExecutor threadPoolExecutor;
 
-    private EventLoopGroup bossGroup = null;
-    private EventLoopGroup workerGroup = null;
-
     public RcServer(ServiceRegister serviceRegister) {
         this.serviceRegister = serviceRegister;
-    }
-
-    public void stop() {
-        if (bossGroup != null) {
-            bossGroup.shutdownGracefully();
-        }
-        if (workerGroup != null) {
-            workerGroup.shutdownGracefully();
-        }
     }
 
     public RcServer addService(String interfaceName, Object serviceBean) {
