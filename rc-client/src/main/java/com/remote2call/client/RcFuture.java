@@ -1,5 +1,7 @@
 package com.remote2call.client;
 
+import com.remote2call.common.protocol.RcRequest;
+import com.remote2call.common.protocol.RcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,5 +32,13 @@ public class RcFuture implements Future<Object> {
 
     public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
         return null;
+    }
+
+    public RcFuture(RcRequest request) {
+
+    }
+
+    public void done(RcResponse response) {
+
     }
 }
