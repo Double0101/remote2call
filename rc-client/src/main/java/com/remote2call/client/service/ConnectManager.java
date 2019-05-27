@@ -50,6 +50,9 @@ public class ConnectManager {
         return connectManager;
     }
 
+    /*
+     * uncomplish
+     */
     public void updateConnectServer(List<String> serverAddresses) {
         if (serverAddresses == null || serverAddresses.size() <= 0) {
             logger.error("No available server node. All server nodes are down !!!");
