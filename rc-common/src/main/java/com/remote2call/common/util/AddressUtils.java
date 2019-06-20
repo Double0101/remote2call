@@ -4,7 +4,7 @@ import org.apache.commons.net.telnet.TelnetClient;
 
 import java.net.InetAddress;
 
-public class AddressUtil {
+public class AddressUtils {
     public static boolean ping(String ip) {
         try {
             return InetAddress.getByName(ip).isReachable(3000);

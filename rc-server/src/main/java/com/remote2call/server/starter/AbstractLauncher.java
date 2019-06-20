@@ -71,7 +71,7 @@ public abstract class AbstractLauncher implements Launchable, Closeable {
             bossGroup.shutdownGracefully();
         if (workGroup != null)
             workGroup.shutdownGracefully();
-        logger.info("Execute Close-Event");
+        logger.info("[remote2call] Execute Close-Event");
     }
 
     private void addShutDownHook() {

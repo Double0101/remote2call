@@ -35,7 +35,7 @@ public class ZkInstance {
                     });
             latch.await();
         } catch (Exception e) {
-            logger.error("zookeeper connect fail", e);
+            logger.error("[remote2call] zookeeper connect fail", e);
             zk = null;
         }
     }
@@ -89,7 +89,7 @@ public class ZkInstance {
                               CreateMode createMode)
             throws KeeperException, InterruptedException{
             String path = zk.create(nodePath, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, createMode);
-            logger.debug("create zookeeper node ({} => {})", path, new String(data));
+            logger.debug("[remote2call] create zookeeper node ({} => {})", path, new String(data));
             return true;
     }
 

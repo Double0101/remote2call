@@ -1,4 +1,4 @@
-package com.remote2call.common.protocol;
+package com.remote2call.common.net;
 
 public class RcResponse {
     private String requestId;

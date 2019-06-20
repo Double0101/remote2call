@@ -1,7 +1,7 @@
 package com.remote2call.client;
 
-import com.remote2call.common.protocol.RcRequest;
-import com.remote2call.common.protocol.RcResponse;
+import com.remote2call.common.net.RcRequest;
+import com.remote2call.common.net.RcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

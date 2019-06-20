@@ -2,8 +2,8 @@ package com.remote2call.client.handler;
 
 import com.remote2call.client.RcFuture;
 import com.remote2call.common.handler.BaseInboundHandler;
-import com.remote2call.common.protocol.RcRequest;
-import com.remote2call.common.protocol.RcResponse;
+import com.remote2call.common.net.RcRequest;
+import com.remote2call.common.net.RcResponse;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;

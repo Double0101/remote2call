@@ -1,8 +1,7 @@
 package com.remote2call.common.handler;
 
-import com.remote2call.common.protocol.RcResponse;
+import com.remote2call.common.net.RcResponse;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,7 @@ public abstract class BaseInboundHandler extends SimpleChannelInboundHandler<RcR
     private static final Logger logger = LoggerFactory.getLogger(BaseInboundHandler.class);
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("client caught exception", cause);
+        logger.error("[remote2call] client caught exception", cause);
         ctx.close();
     }
 }

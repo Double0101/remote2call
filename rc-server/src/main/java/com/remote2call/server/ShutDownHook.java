@@ -17,7 +17,7 @@ public class ShutDownHook implements Runnable {
         Thread thread = new Thread(this);
         thread.setDaemon(true);
         Runtime.getRuntime().addShutdownHook(thread);
-        logger.info("Add ShutDownHook Success");
+        logger.info("[remote2call] add ShutDownHook Success");
     }
 
     public void run() {
