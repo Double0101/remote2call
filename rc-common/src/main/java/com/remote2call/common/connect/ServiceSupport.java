@@ -16,4 +16,8 @@ public abstract class ServiceSupport {
         zkInstance = ZkInstance.createZkCluster(registryAddress);
     }
 
+    public void disconnect() throws InterruptedException {
+        zkInstance.disconnect();
+    }
+
 }

@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/*
+ * connect to zookeeper
+ * discover reachable services
+ */
 public class ServiceDiscovery extends ServiceSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceDiscovery.class);

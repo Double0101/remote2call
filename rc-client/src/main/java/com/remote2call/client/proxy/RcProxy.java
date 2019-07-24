@@ -12,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+/*
+ * service proxy
+ */
 public class RcProxy<T> implements InvocationHandler, IAsyncProxy {
     private static final Logger logger = LoggerFactory.getLogger(RcProxy.class);
 

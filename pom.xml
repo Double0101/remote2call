@@ -12,6 +12,7 @@
         <module>rc-server</module>
         <module>rc-common</module>
         <module>rc-client</module>
+        <module>rc-sample</module>
     </modules>
 
     <dependencies>

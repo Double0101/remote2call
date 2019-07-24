@@ -53,25 +53,25 @@ public class ConnectManager {
     /*
      * uncomplish
      */
-    public void updateConnectServer(List<String> serverAddresses) {
-        if (serverAddresses == null || serverAddresses.size() <= 0) {
-            logger.error("No available server node. All server nodes are down !!!");
-            connectedHandlers.clear();
-        } else {
-            HashSet<InetSocketAddress> newAllServerNodeSet = new HashSet<InetSocketAddress>();
-            serverAddresses.forEach(address -> {
-                String[] array = address.split(":");
-                if (array.length == 2) {
-                    newAllServerNodeSet.add(
-                            new InetSocketAddress(
-                                    array[0], Integer.parseInt(array[1])
-                            )
-                    );
-                }
-            });
-
-        }
-    }
+//    public void updateConnectServer(List<String> serverAddresses) {
+//        if (serverAddresses == null || serverAddresses.size() <= 0) {
+//            logger.error("No available server node. All server nodes are down !!!");
+//            connectedHandlers.clear();
+//        } else {
+//            HashSet<InetSocketAddress> newAllServerNodeSet = new HashSet<InetSocketAddress>();
+//            serverAddresses.forEach(address -> {
+//                String[] array = address.split(":");
+//                if (array.length == 2) {
+//                    newAllServerNodeSet.add(
+//                            new InetSocketAddress(
+//                                    array[0], Integer.parseInt(array[1])
+//                            )
+//                    );
+//                }
+//            });
+//
+//        }
+//    }
 
     public void reconnnect(final RcClientHandler handler, final SocketAddress remotePeer) {
         if (handler != null) {
@@ -99,7 +99,7 @@ public class ConnectManager {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
-                            logger.debug("Successfully connect to remote server. remote peer = " + remotePeer);
+                            logger.debug("Successfully connect to remote server. remote peer = {}", remotePeer);
                             RcClientHandler handler = future.channel().pipeline().get(RcClientHandler.class);
                             addHandler(handler);
                         }

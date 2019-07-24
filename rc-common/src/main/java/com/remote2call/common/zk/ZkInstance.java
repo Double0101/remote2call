@@ -97,7 +97,7 @@ public class ZkInstance {
         return watchNode(this.zk);
     }
 
-    public List watchNode(ZooKeeper zk) {
+    public List watchNode(final ZooKeeper zk) {
         List<String> dataList = new ArrayList<>();
         try {
             List<String> nodeList = zk.getChildren(Constant.ZK_REGISTRY_PATH, event -> {
@@ -124,6 +124,14 @@ public class ZkInstance {
             e.printStackTrace();
         }
         return dataList;
+    }
+
+    public void disconnect() throws InterruptedException {
+        if (zk != null) {
+            logger.info("zookeeper disconnect ...");
+            zk.close();
+            logger.info("zookeeper has disconnected");
+        }
     }
 
     private void updateConnectServer() {
