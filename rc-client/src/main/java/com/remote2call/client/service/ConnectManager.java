@@ -50,28 +50,48 @@ public class ConnectManager {
         return connectManager;
     }
 
-    /*
-     * uncomplish
-     */
-//    public void updateConnectServer(List<String> serverAddresses) {
-//        if (serverAddresses == null || serverAddresses.size() <= 0) {
-//            logger.error("No available server node. All server nodes are down !!!");
-//            connectedHandlers.clear();
-//        } else {
-//            HashSet<InetSocketAddress> newAllServerNodeSet = new HashSet<InetSocketAddress>();
-//            serverAddresses.forEach(address -> {
-//                String[] array = address.split(":");
-//                if (array.length == 2) {
-//                    newAllServerNodeSet.add(
-//                            new InetSocketAddress(
-//                                    array[0], Integer.parseInt(array[1])
-//                            )
-//                    );
-//                }
-//            });
-//
-//        }
-//    }
+
+    public void updateConnectedServer(List<String> allServerAddress) {
+        if (allServerAddress != null) {
+            if (allServerAddress.size() >= 0) {
+                HashSet<InetSocketAddress> newAllServerNodeSet = new HashSet<InetSocketAddress>();
+                for (String socketAddress : allServerAddress) {
+                    String[] array = socketAddress.split(":");
+                    if (array.length == 2) {
+                        newAllServerNodeSet.add(new InetSocketAddress(array[0], Integer.parseInt(array[1])));
+                    }
+                }
+
+                for (final InetSocketAddress nodeAddress : newAllServerNodeSet) {
+                    if (!connectedServerNodes.keySet().contains(nodeAddress)) {
+                        connectServerNode(nodeAddress);
+                    }
+                }
+
+                for (RcClientHandler connectedHandler : connectedHandlers) {
+                    SocketAddress remotePeer = connectedHandler.getRemotePeer();
+                    if (!newAllServerNodeSet.contains(remotePeer)) {
+                        logger.info("remove invalid server node " + remotePeer);
+                        RcClientHandler handler = connectedServerNodes.get(remotePeer);
+                        if (handler != null) {
+                            handler.close();
+                        }
+                        connectedServerNodes.remove(remotePeer);
+                        connectedHandlers.remove(connectedHandler);
+                    }
+                }
+            }
+            else {
+                logger.error("No available server node. All server nodes down !!!");
+                for (final RcClientHandler serverHandler : connectedHandlers) {
+                    RcClientHandler handler = connectedServerNodes.get(serverHandler.getRemotePeer());
+                    handler.close();
+                    connectedServerNodes.remove(serverHandler);
+                }
+                connectedHandlers.clear();
+            }
+        }
+    }
 
     public void reconnnect(final RcClientHandler handler, final SocketAddress remotePeer) {
         if (handler != null) {

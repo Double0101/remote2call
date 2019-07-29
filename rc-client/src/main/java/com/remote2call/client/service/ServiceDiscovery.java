@@ -22,7 +22,7 @@ public class ServiceDiscovery extends ServiceSupport {
         super(address);
         connectServer();
         if (zkInstance != null) {
-            zkInstance.watchAll();
+            zkInstance.watchAll(dataList);
         }
     }
 

@@ -100,21 +100,21 @@ public class ZkInstance {
         return false;
     }
 
-    public List watchAll() {
-        return watchNode(this.zk);
+    public List watchAll(List<String> dataList) {
+        return watchNode(dataList, this.zk);
     }
 
-    public List watchNode(final ZooKeeper zk) {
-        List<String> dataList = new ArrayList<>();
+    public List watchNode(List<String> dataList, final ZooKeeper zk) {
+        List<String> datas = new ArrayList<>();
         try {
             List<String> nodeList = zk.getChildren(Constant.ZK_REGISTRY_PATH, event -> {
                 if (event.getType() == Watcher.Event.EventType.NodeChildrenChanged) {
-                    watchNode(zk);
+                    watchNode(dataList, zk);
                 }
             });
             nodeList.forEach(node -> {
                 try {
-                    dataList.add(
+                    datas.add(
                             new String(zk.getData(Constant.ZK_REGISTRY_PATH + "/" + node,
                                     false,
                                     null))
@@ -125,12 +125,13 @@ public class ZkInstance {
                     e.printStackTrace();
                 }
             });
+            updateConnectServer(dataList);
         } catch (KeeperException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return dataList;
+        return datas;
     }
 
     public void disconnect() throws InterruptedException {
@@ -141,7 +142,7 @@ public class ZkInstance {
         }
     }
 
-    private void updateConnectServer() {
-
+    private void updateConnectServer(List<String> dataList) {
+        // todo connectManager
     }
 }
