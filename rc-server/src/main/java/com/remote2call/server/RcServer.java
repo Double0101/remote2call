@@ -23,6 +23,7 @@ public class RcServer extends AbstractLauncher {
 
     public RcServer addService(String interfaceName, Object serviceBean) {
         if (!handlerMap.containsKey(interfaceName)) {
+            logger.info("Loading service: {}", interfaceName);
             handlerMap.put(interfaceName, serviceBean);
         }
         return this;
@@ -33,6 +34,11 @@ public class RcServer extends AbstractLauncher {
 
     }
 
+
+    /**
+     *
+     * @throws Exception
+     */
     @Override
     public void onStart() throws Exception {
         if (serviceRegister != null) {

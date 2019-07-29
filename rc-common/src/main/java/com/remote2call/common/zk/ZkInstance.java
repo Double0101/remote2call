@@ -88,9 +88,16 @@ public class ZkInstance {
                               byte[] data,
                               CreateMode createMode)
             throws KeeperException, InterruptedException{
+        Stat stat = null;
+        if (CreateMode.PERSISTENT == createMode || CreateMode.EPHEMERAL == createMode) {
+            stat = zk.exists(nodePath, false);
+        }
+        if (stat == null) {
             String path = zk.create(nodePath, data, ZooDefs.Ids.OPEN_ACL_UNSAFE, createMode);
             logger.debug("[remote2call] create zookeeper node ({} => {})", path, new String(data));
             return true;
+        }
+        return false;
     }
 
     public List watchAll() {

@@ -3,10 +3,15 @@ package com.remote2call.server.service;
 import com.remote2call.common.constant.Constant;
 import com.remote2call.common.connect.ServiceSupport;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/*
+ * connect to zookeeper
+ * create remote2call folder
+ * *complete*
+ */
 public class ServiceRegister extends ServiceSupport {
     private static final Logger logger = LoggerFactory.getLogger(ServiceRegister.class);
 
@@ -19,7 +24,7 @@ public class ServiceRegister extends ServiceSupport {
             connectServer();
             if (zkInstance != null) {
                 zkInstance.createNode(Constant.ZK_REGISTRY_PATH, new byte[0], CreateMode.PERSISTENT);
-                zkInstance.createNode(Constant.ZK_DATA_PATH, data.getBytes(), CreateMode.EPHEMERAL_SEQUENTIAL);
+                zkInstance.createNode(Constant.ZK_DATA_PATH, data.getBytes(), CreateMode.PERSISTENT);
             }
         }
     }
