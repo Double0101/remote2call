@@ -102,6 +102,11 @@ public class ConnectManager {
         connectServerNode((InetSocketAddress) remotePeer);
     }
 
+    /**
+     * connect server
+     * get handler
+     * @param remotePeer
+     */
     private void connectServerNode(final InetSocketAddress remotePeer) {
         threadPoolExecutor.submit(new Runnable() {
             @Override
@@ -109,11 +114,8 @@ public class ConnectManager {
                 Bootstrap bootstrap = new Bootstrap();
                 bootstrap.group(eventLoopGroup)
                         .channel(NioSocketChannel.class)
-                        .handler(new ChannelInitializer<NioSocketChannel>() {
-                    @Override
-                    protected void initChannel(NioSocketChannel ch) throws Exception {
-                    }
-                });
+                        .handler(null);
+                // TODO
                 ChannelFuture future = bootstrap.connect(remotePeer);
                 future.addListener(new ChannelFutureListener() {
                     @Override
@@ -129,11 +131,15 @@ public class ConnectManager {
         });
     }
 
+    /**
+     * add handler
+     * @param handler
+     */
     private void addHandler(RcClientHandler handler) {
         connectedHandlers.add(handler);
         InetSocketAddress address = (InetSocketAddress) handler.getChannel().remoteAddress();
         connectedServerNodes.put(address, handler);
-
+        signalAvailableHandler();
     }
 
     private void signalAvailableHandler() {
@@ -155,6 +161,7 @@ public class ConnectManager {
     }
 
     public RcClientHandler chooseHandler() {
+        // waiting for available handler
         int size = connectedHandlers.size();
         while (isRuning && size <= 0) {
             try {
@@ -167,6 +174,8 @@ public class ConnectManager {
                 throw new RuntimeException("Can't connect any servers!", e);
             }
         }
+
+        // implements simple round patrol
         int index = (roundRobin.getAndAdd(1) + size) % size;
         return connectedHandlers.get(index);
     }
