@@ -5,40 +5,87 @@ import com.remote2call.common.net.RcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class RcFuture implements Future<Object> {
 
     private static final Logger logger = LoggerFactory.getLogger(RcFuture.class);
 
+    private Sync sync;
+
+    private RcRequest request;
+
+    private RcResponse response;
+
+    private long startTime;
+
+    private long responseTimeThreshold = 5000l;
+
+    private List<AsyncRcCallback> pendingCallbacks = new ArrayList<AsyncRcCallback>();
+    private ReentrantLock lock = new ReentrantLock();
+
     public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     public boolean isCancelled() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     public boolean isDone() {
-        return false;
+        return this.sync.isDone();
     }
 
     public Object get() throws InterruptedException, ExecutionException {
-        return null;
+        this.sync.acquire(-1);
+        if (this.response != null) {
+            return this.response.getResult();
+        } else {
+            return null;
+        }
     }
 
     public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        return null;
+        boolean success = this.sync.tryAcquireNanos(-1, unit.toNanos(timeout));
+        if (success) {
+            if (this.response != null) {
+                return this.response.getResult();
+            } else {
+                return null;
+            }
+        } else {
+            throw new RuntimeException("Timeout exception. Request id: " + this.request.getRequestId()
+                    + ". Request class name: " + this.request.getClassName()
+                    + ". Request method: " + this.request.getMethodName());
+        }
     }
 
     public RcFuture(RcRequest request) {
-
+        this.sync = new Sync();
+        this.request = request;
+        this.startTime = System.currentTimeMillis();
     }
 
     public void done(RcResponse response) {
+        
+    }
 
+    static class Sync extends AbstractQueuedSynchronizer {
+        private static final long serialVersionUID = 1L;
+
+        private final int done = 1;
+        private final int pending = 0;
+
+        public boolean isDone() {
+            getState();
+            return getState() == done;
+        }
     }
 }
