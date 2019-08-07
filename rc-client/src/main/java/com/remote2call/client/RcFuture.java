@@ -74,7 +74,38 @@ public class RcFuture implements Future<Object> {
     }
 
     public void done(RcResponse response) {
-        
+        this.response = response;
+        sync.release(1);
+        invokeCallbacks();
+        long responseTime = System.currentTimeMillis() - startTime;
+        if (responseTime > this.responseTimeThreshold) {
+            logger.warn("Service response time is too slow. Request id = " + response.getRequestId() + ". Response Time = " + responseTime + "ms");
+        }
+    }
+
+    private void invokeCallbacks() {
+        lock.lock();
+        try {
+            for (final AsyncRcCallback callback : pendingCallbacks) {
+                runCallback(callback);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void runCallback(final AsyncRcCallback callback) {
+        final RcResponse res = this.response;
+        RcClient.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (!res.isError()) {
+                    callback.success(res.getResult());
+                } else {
+                    callback.fail(new RuntimeException("Response error", new Throwable(res.getError())));
+                }
+            }
+        });
     }
 
     static class Sync extends AbstractQueuedSynchronizer {
@@ -82,6 +113,22 @@ public class RcFuture implements Future<Object> {
 
         private final int done = 1;
         private final int pending = 0;
+
+        @Override
+        protected boolean tryAcquire(int arg) {
+            return getState() == done;
+        }
+
+        @Override
+        protected boolean tryRelease(int arg) {
+            if (getState() == pending) {
+                if (compareAndSetState(pending, done)) {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
 
         public boolean isDone() {
             getState();

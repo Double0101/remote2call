@@ -6,10 +6,15 @@ import com.remote2call.client.service.ConnectManager;
 import com.remote2call.client.service.ServiceDiscovery;
 
 import java.lang.reflect.Proxy;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class RcClient {
     private String serverAddress;
     private ServiceDiscovery serviceDiscovery;
+    private static ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(16, 16,
+            600L, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(65536));
 
     public RcClient(String serverAddress) {
         this.serverAddress = serverAddress;
@@ -25,6 +30,10 @@ public class RcClient {
                 new Class<?>[]{interfaceClass},
                 new RcProxy<T>(interfaceClass)
         );
+    }
+
+    public static void submit(Runnable task) {
+        threadPoolExecutor.submit(task);
     }
 
     public static <T> IAsyncProxy createAsync(Class<T> interfaceClass) {
