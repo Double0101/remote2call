@@ -50,7 +50,12 @@ public class ConnectManager {
         return connectManager;
     }
 
-
+    /**
+     * update server nodes
+     * keep accessible server
+     * remove disconnect server
+     * @param allServerAddress
+     */
     public void updateConnectedServer(List<String> allServerAddress) {
         if (allServerAddress != null) {
             if (allServerAddress.size() >= 0) {
