@@ -94,6 +94,21 @@ public class RcFuture implements Future<Object> {
         }
     }
 
+    public RcFuture addCallback(AsyncRcCallback callback) {
+        lock.lock();
+        try {
+            if (isDone()) {
+                runCallback(callback);
+            } else {
+                this.pendingCallbacks.add(callback);
+            }
+        } finally {
+            lock.unlock();
+        }
+
+        return this;
+    }
+
     private void runCallback(final AsyncRcCallback callback) {
         final RcResponse res = this.response;
         RcClient.submit(new Runnable() {
