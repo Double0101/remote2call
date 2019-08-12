@@ -6,7 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class BaseInboundHandler extends SimpleChannelInboundHandler<RcResponse> {
+public abstract class BaseInboundHandler<T> extends SimpleChannelInboundHandler<T> {
     private static final Logger logger = LoggerFactory.getLogger(BaseInboundHandler.class);
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {

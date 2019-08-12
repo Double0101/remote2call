@@ -15,7 +15,7 @@ import java.net.SocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
-public class RcClientHandler extends BaseInboundHandler {
+public class RcClientHandler extends BaseInboundHandler<RcResponse> {
     private static final Logger logger = LoggerFactory.getLogger(RcClientHandler.class);
 
     private ConcurrentHashMap<String, RcFuture> pendingRPC = new ConcurrentHashMap<>();

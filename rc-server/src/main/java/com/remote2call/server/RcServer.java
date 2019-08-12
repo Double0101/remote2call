@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class RcServer extends AbstractLauncher {
     private static final Logger logger = LoggerFactory.getLogger(RcServer.class);
@@ -15,7 +18,8 @@ public class RcServer extends AbstractLauncher {
     private ServiceRegister serviceRegister;
 
     private Map<String, Object> handlerMap = new HashMap<>();
-//    private volatile ThreadPoolExecutor threadPoolExecutor;
+
+    private static ThreadPoolExecutor threadPoolExecutor;
 
     public RcServer(ServiceRegister serviceRegister) {
         this.serviceRegister = serviceRegister;
@@ -29,11 +33,22 @@ public class RcServer extends AbstractLauncher {
         return this;
     }
 
+    public static void submit(Runnable task) {
+        if (threadPoolExecutor == null) {
+            synchronized (RcServer.class) {
+                if (threadPoolExecutor == null) {
+                    threadPoolExecutor = new ThreadPoolExecutor(16, 16, 600L,
+                            TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(65535));
+                }
+            }
+        }
+        threadPoolExecutor.submit(task);
+    }
+
     @Override
     public void prepare() {
 
     }
-
 
     /**
      *
